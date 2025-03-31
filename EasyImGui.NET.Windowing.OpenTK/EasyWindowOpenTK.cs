@@ -27,7 +27,9 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
     public ClearBufferMask ClearBufferMask = ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit;
     public string GlslVersion = "#version 150";
 
-    private List<ImGuiAction> _imguiWindows = [];
+    protected EasyResourceLoader ResourceLoader = new();
+
+    private readonly List<ImGuiAction> _imguiWindows = [];
     public int TestInt = 0;
 
     protected override void OnLoad() {
@@ -62,29 +64,14 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
             EasySetters.SetColorDefs(inst, dFields);
         }
 
-        // TODO simplify(?) and move elsewhere. Probably into EasyTextureOpenTK
-        var mainAssembly = Assembly.GetEntryAssembly();
-        if (mainAssembly == null) return;
-        var mainAssemblyName = mainAssembly.GetName().Name;
-        var resourceNames = mainAssembly.GetManifestResourceNames();
+        ResourceLoader.InitMainAssembly();
         foreach (var field in fields) {
             var attribute = field.GetCustomAttribute<TextureDefAttribute>();
-            if (attribute == null) continue;
-            if(attribute.ResourceName == null) continue;
-            var fullName = $"{mainAssemblyName}.Resources.{attribute.ResourceName}";
-
-            if (!resourceNames.Contains(fullName)) continue;
-
-            using Stream? resourceStream = mainAssembly.GetManifestResourceStream(fullName);
-            if (resourceStream == null) continue;
-            using MemoryStream memoryStream = new();
-            resourceStream.CopyTo(memoryStream);
-
-            var bytes = memoryStream.ToArray();
+            if (attribute == null || attribute.ResourceName == null) continue;
+            var bytes = ResourceLoader.LoadTexture(attribute);
             var tex = EasyTextureOpenTK.CreateTexture(bytes, attribute.Width, attribute.Height, attribute.ResourceName);
             field.SetValue(this, tex);
         }
-
 
     }
 
@@ -107,7 +94,6 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
                 action(args);
                 if (attr.AutoEnd) ImGui.End();
             }
-            //imguiWin(args);
         }
 
         ImGui.Render();

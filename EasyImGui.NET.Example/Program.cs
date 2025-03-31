@@ -57,7 +57,7 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
     // Define a texture that's in resx
     // Processed means the texture has already been processed and doesn't require any processing.
     // Eg it's already been ran through StbImage and saved as a raw binary.
-    [TextureDef(ResourceName = "testimage", Processed = true)]
+    [TextureDef(ResourceName = "testimg", Width = 123, Height = 128, Processed = true)]
     public uint TestTexture;
 
     // Each ImGuiWindow definition is called every frame after settingup ImGui frame.

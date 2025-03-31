@@ -9,7 +9,7 @@ using System.Reflection;
 using System.ComponentModel;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using EasyImGui.NET.Common.Converters;
+using System.Resources;
 
 namespace EasyImGui.NET.Windowing.OpenTK;
 
@@ -61,6 +61,30 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
             var inst = field.GetValue(this);
             EasySetters.SetColorDefs(inst, dFields);
         }
+
+        // TODO simplify(?) and move elsewhere. Probably into EasyTextureOpenTK
+        var mainAssembly = Assembly.GetEntryAssembly();
+        if (mainAssembly == null) return;
+        var mainAssemblyName = mainAssembly.GetName().Name;
+        var resourceNames = mainAssembly.GetManifestResourceNames();
+        foreach (var field in fields) {
+            var attribute = field.GetCustomAttribute<TextureDefAttribute>();
+            if (attribute == null) continue;
+            if(attribute.ResourceName == null) continue;
+            var fullName = $"{mainAssemblyName}.Resources.{attribute.ResourceName}";
+
+            if (!resourceNames.Contains(fullName)) continue;
+
+            using Stream? resourceStream = mainAssembly.GetManifestResourceStream(fullName);
+            if (resourceStream == null) continue;
+            using MemoryStream memoryStream = new();
+            resourceStream.CopyTo(memoryStream);
+
+            var bytes = memoryStream.ToArray();
+            var tex = EasyTextureOpenTK.CreateTexture(bytes, attribute.Width, attribute.Height, attribute.ResourceName);
+            field.SetValue(this, tex);
+        }
+
 
     }
 
@@ -118,27 +142,3 @@ internal static class ActionGen {
     }
 
 }
-
-
-/*
-public unsafe partial class EasyWindow {
-
-    private IEnumerable<Action<FrameEventArgs>> _actions = [];
-
-    private IEnumerable<Action<FrameEventArgs>> CreateActions() {
-        var methods = GetType().GetMethods(
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public
-        ).Where(method => method.GetCustomAttribute<ImGuiWindowAttribute>() != null);
-        List<Action<FrameEventArgs>> actions = [];
-        foreach (var method in methods) {
-            actions.Add(CreateAction<FrameEventArgs>(method));
-        }
-        _actions = actions;
-        return actions;
-    }
-
-    private Action<T> CreateAction<T>(MethodInfo mi) {
-        return (Action<T>)Delegate.CreateDelegate(typeof(Action<T>), this, mi);
-    }
-}
- */

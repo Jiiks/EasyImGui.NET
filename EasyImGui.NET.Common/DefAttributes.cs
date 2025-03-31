@@ -30,6 +30,7 @@ public class ColorsDefAttribute(string[] hexValues) : Attribute {
 public class TextureDefAttribute : Attribute {
     public string? ResourceName;
     public string? FileName;
+    public required int Width, Height;
     public bool Processed = false;
 };
 

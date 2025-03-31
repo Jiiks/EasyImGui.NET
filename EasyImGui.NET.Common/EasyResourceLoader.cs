@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using Hexa.NET.ImGui;
+using System.Reflection;
+using System.Text;
 
 namespace EasyImGui.NET.Common;
 
@@ -38,6 +40,42 @@ public class EasyResourceLoader {
         var fp = ResourcePath(textureDef.ResourceName);
         if (!ResourceExists(fp)) return null;
         return GetResourceBytes(fp);
+    }
+
+    public unsafe ImFontPtr[] LoadFonts(FontDefAttribute fontDef) {
+
+        List<ImFontPtr> ptrs = [];
+        if (fontDef == null || fontDef.ResourceName == null) return [.. ptrs];
+        var fp = ResourcePath(fontDef.ResourceName);
+        if (!ResourceExists(fp)) return [.. ptrs];
+
+        var bytes = GetResourceBytes(fp);
+
+
+        foreach(var size in fontDef.Sizes) {
+            var fontPtr = LoadFont(bytes, "consolas", size);
+            ptrs.Add(fontPtr);
+        }
+
+        return [.. ptrs];
+        //var fontPtr = LoadFont(bytes, "consolas", 16);
+
+        //return (fontPtr, 16);
+    }
+
+    public unsafe ImFontPtr LoadFont(ReadOnlySpan<byte> fontData, string name, int size) {
+        ImFontPtr fontPtr = null;
+        fixed (byte* ptr = fontData) {
+            var cfg = ImGui.ImFontConfig() with {
+                FontDataOwnedByAtlas = false
+            };
+            var nameData = new Span<byte>(Encoding.UTF8.GetBytes($"{name}, {size}px"));
+            nameData.CopyTo(cfg.Name);
+            fontPtr = ImGui.GetIO().Fonts.AddFontFromMemoryTTF(ptr, fontData.Length, size, cfg);
+            cfg.Destroy();
+        }
+
+        return fontPtr;
     }
 
 }

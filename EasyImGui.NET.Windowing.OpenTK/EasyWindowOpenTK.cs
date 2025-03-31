@@ -73,6 +73,33 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
             field.SetValue(this, tex);
         }
 
+        // TODO this is kinda messy but prevents reloading fonts
+        Dictionary<(string, int), ImFontPtr> loadedFonts = [];
+        var fsAttrIndex = 0;
+        foreach (var field in fields) {
+            var attribute = field.GetCustomAttribute<FontDefAttribute>();
+            if (attribute == null || attribute.ResourceName == null) continue;
+
+            if (loadedFonts.ContainsKey((attribute.Name, attribute.Sizes[fsAttrIndex]))) {
+                field.SetValue(this, loadedFonts[(attribute.Name, attribute.Sizes[fsAttrIndex])]);
+                fsAttrIndex++;
+                if (fsAttrIndex >= attribute.Sizes.Length) fsAttrIndex = 0;
+                continue;
+            }
+
+            var fonts = ResourceLoader.LoadFonts(attribute);
+            var sizeIndex = 0;
+            foreach (var font in fonts) {
+                loadedFonts[(attribute.Name, attribute.Sizes[sizeIndex])] = font;
+                sizeIndex++;
+            }
+
+            field.SetValue(this, fonts[fsAttrIndex]);
+
+            fsAttrIndex++;
+
+            if (fsAttrIndex >= attribute.Sizes.Length) fsAttrIndex = 0;
+        }
     }
 
     /// <inheritdoc/>

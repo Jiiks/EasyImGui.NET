@@ -44,7 +44,7 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
     // Other formats besides hex can be used
     [ColorDef(123, 104, 238, 255)] // Rgb or Rgba
     public Vector4 MediumSlateBlue;
-    [ColorDef(.68f, .85f,  .9f, .6f)] // Rgb or Rgba float
+    [ColorDef(.68f, .85f, .9f, .6f)] // Rgb or Rgba float
     public Vector4 SkyBlueTranslucent;
 
     // Multi def can only be used with hex due to attribute limitations.
@@ -59,6 +59,13 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
     // Eg it's already been ran through StbImage and saved as a raw binary.
     [TextureDef(ResourceName = "testimg", Width = 123, Height = 128, Processed = true)]
     public uint TestTexture;
+
+    // Define a font that's in resx with sizes 16 and 32
+    [FontDef("consolas", 16, 32, ResourceName = "consolas.ttf")]
+    public ImFontPtr Consolas16, Consolas32;
+
+    [FontDef("xmtrafficbold", 16, 32, ResourceName = "XM TrafficBd.ttf")]
+    public ImFontPtr XmTrafficBd16, XmTrafficBd32;
 
     // Each ImGuiWindow definition is called every frame after settingup ImGui frame.
     // Setting title will AutoBegin unless AutoBegin is set to false.
@@ -78,10 +85,16 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
     // Additional windows can be defined just as easy.
     [ImGuiWindow(AutoBegin = true, AutoEnd = true, Id = "ImageDemoWindow", Title = "Image Demo")]
     public void ImageDemoWindow(FrameEventArgs e) {
+        ImGui.PushFont(Consolas32);
         ImGui.TextColored(_colors.Purple, "This is a second window");
         ImGui.TextColored(_colors.PurpleTranslucent, "PurpleTranslucent");
+        ImGui.PopFont();
+        ImGui.PushFont(XmTrafficBd16);
         ImGui.TextColored(_colors.PurpleLighter, "PurpleLighter");
+        ImGui.PopFont();
+        ImGui.PushFont(XmTrafficBd32);
         ImGui.TextColored(_colors.PurpleDarker, "PurpleDarker");
+        ImGui.PopFont();
         ImGui.Image(TestTexture, new Vector2(128, 128));
     }
 

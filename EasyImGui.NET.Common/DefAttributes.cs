@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace EasyImGui.NET.Common;
 
+// TODO Texture and Font loading with IEasyDefines
 public interface IEasyDefines { }
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
@@ -33,6 +34,14 @@ public class TextureDefAttribute : Attribute {
     public required int Width, Height;
     public bool Processed = false;
 };
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class FontDefAttribute(string name, params int[] sizes) : Attribute {
+    public string? ResourceName;
+    public string? FileName;
+    public string Name = name;
+    public int[] Sizes = sizes;
+}
 
 public static class EasySetters {
     public static void SetColorDefs(object? sender, FieldInfo[]? fields) {

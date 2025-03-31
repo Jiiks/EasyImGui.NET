@@ -11,11 +11,13 @@
   <ItemGroup>
     <None Remove="Resources\consolas.ttf" />
     <None Remove="Resources\testimg" />
+    <None Remove="Resources\XM TrafficBd.ttf" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\consolas.ttf" />
     <EmbeddedResource Include="Resources\testimg" />
+    <EmbeddedResource Include="Resources\XM TrafficBd.ttf" />
   </ItemGroup>
 
   <ItemGroup>

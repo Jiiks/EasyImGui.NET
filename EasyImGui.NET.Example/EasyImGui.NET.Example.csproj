@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\consolas.ttf" />
+    <None Remove="Resources\testimg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\consolas.ttf" />
+    <EmbeddedResource Include="Resources\testimg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Demos\EasyImGui.NET.Demos.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Common\EasyImGui.NET.Common.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Easy\EasyImGui.NET.Core.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Windowing.OpenTK\EasyImGui.NET.Windowing.OpenTK.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Window\EasyImGui.NET.Window.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

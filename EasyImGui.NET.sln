@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyImGui.NET.Core", "EasyImGui.NET.Easy\EasyImGui.NET.Core.csproj", "{3FB53F5E-89C5-446C-BBB2-CD1C69C2B9EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyImGui.NET.Core", "EasyImGui.NET.Core\EasyImGui.NET.Core.csproj", "{3FB53F5E-89C5-446C-BBB2-CD1C69C2B9EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyImGui.NET.Common", "EasyImGui.NET.Common\EasyImGui.NET.Common.csproj", "{C92981F9-18C8-449A-831A-BF01337E5D13}"
 EndProject

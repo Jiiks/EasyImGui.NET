@@ -13,6 +13,9 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
 
     private const string ROOT_DIR = "C:\\";
 
+    [ColorsDef(["#FF5733", "#33FF57"])]
+    public Vector4 RedOrange, FreshGreen;
+
     private readonly Dictionary<string, DirectoryInfo[]> _dirCache = [];
     private DirectoryInfo? _currentDir, _selectedDir;
     private DirectoryInfo[] GetCachedDir(string path) {
@@ -39,6 +42,20 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
         } catch(UnauthorizedAccessException) {
             throw;
         }
+    }
+
+    private Dictionary<string, bool> _access = [];
+    private bool CanAccess(DirectoryInfo di) {
+        if (_access.TryGetValue(di.FullName, out bool value)) return value;
+        try {
+            di.GetDirectories();
+            _access[di.FullName] = true;
+            return true;
+        } catch (UnauthorizedAccessException) {
+            _access[di.FullName] = false;
+            return false;
+        }
+
     }
 
     [ImGuiWindow(AutoEnd = true)]
@@ -77,15 +94,19 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
         if (_currentDir != null) {
             try {
                 _selectedDir = _currentDir;
-                var files = GetCachedFiles(_currentDir);
-                if (files.Length <= 0) ImGui.Text("No Files");
-                int fileIdx = 0;
-                foreach (var file in files) {
-                    if(ImGui.Selectable(file.Name, _selectedFileIdx == fileIdx)) {
-                        _selectedFileIdx = fileIdx;
-                        _selectedFile = file;
+                if (!CanAccess(_selectedDir)) {
+                    ImGui.Text($"Access to the path '{_selectedDir.FullName}' is denied.");
+                } else {
+                    var files = GetCachedFiles(_currentDir);
+                    if (files.Length <= 0) ImGui.Text("No Files");
+                    int fileIdx = 0;
+                    foreach (var file in files) {
+                        if (ImGui.Selectable(file.Name, _selectedFileIdx == fileIdx)) {
+                            _selectedFileIdx = fileIdx;
+                            _selectedFile = file;
+                        }
+                        fileIdx++;
                     }
-                    fileIdx++;
                 }
             } catch (UnauthorizedAccessException e) {
                 ImGui.Text($"{e.Message}");
@@ -108,6 +129,15 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None;
         if (di.Name == ROOT_DIR) flags |= ImGuiTreeNodeFlags.DefaultOpen;
         if (_selectedDir?.Name == di.Name) flags |= ImGuiTreeNodeFlags.Selected;
+        if (!CanAccess(di)) {
+            ImGui.PushStyleColor(ImGuiCol.Text, RedOrange);
+            flags |= ImGuiTreeNodeFlags.Leaf;
+            ImGui.TreeNodeEx($"ACCESS DENIED - {di.Name}", flags);
+            ImGui.TreePop();
+            ImGui.PopStyleColor();
+            return;
+        }
+
         if (ImGui.TreeNodeEx(di.Name, flags)) {
             _currentDir = di;
             try {
@@ -118,7 +148,6 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
                 }
             } catch (UnauthorizedAccessException) {
             }
-
             ImGui.TreePop();
         }
     }

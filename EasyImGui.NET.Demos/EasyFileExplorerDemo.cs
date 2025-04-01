@@ -1,6 +1,7 @@
 ﻿using EasyImGui.NET.Common;
 using EasyImGui.NET.Windowing.OpenTK;
 using Hexa.NET.ImGui;
+using Hexa.NET.StbImage;
 using HeyRed.Mime;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -15,6 +16,9 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
 
     [ColorsDef(["#FF5733", "#33FF57"])]
     public Vector4 RedOrange, FreshGreen;
+
+    [ColorDef(0, 0, 0, .2f)]
+    public Vector4 PreviewBg;
 
     private readonly Dictionary<string, DirectoryInfo[]> _dirCache = [];
     private DirectoryInfo? _currentDir, _selectedDir;
@@ -58,6 +62,8 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
 
     }
 
+    private Dictionary<string, (Vector2, uint)> _images = [];
+
     [ImGuiWindow(AutoEnd = true)]
     public void MainWindow(FrameEventArgs args) {
         ImGuiWindowFlags flags = ImGuiWindowFlags.None | ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoTitleBar;
@@ -68,61 +74,67 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
 
     [ImGuiWindow(AutoBegin = true, AutoEnd = true, Id = "MainWindow")]
     public void Container(FrameEventArgs args) {
-        ImGui.BeginTable("File Browser", 2);
+        // File Browser Table
+        if (ImGui.BeginTable("File Browser", 2)) {
 
-        // Header
-        ImGui.TableNextRow(); ImGui.TableNextColumn();
-        ImGui.TableHeader("Directories");
-        ImGui.TableNextColumn();
-        ImGui.TableHeader("Files");
+            // Header
+            ImGui.TableNextRow(); ImGui.TableNextColumn();
+            ImGui.TableHeader("Directories");
+            ImGui.TableNextColumn();
+            ImGui.TableHeader("Files");
 
-        // Body
-        ImGui.TableNextRow(); ImGui.TableNextColumn();
+            // Body
+            ImGui.TableNextRow(); ImGui.TableNextColumn();
 
-        // Directory body
-        ImGui.BeginChild("Directories");
-        var root = new DirectoryInfo(ROOT_DIR);
-        RenderDirTree(root);
-        ImGui.EndChild();
-
-        // Files body
-        ImGui.TableNextColumn();
-
-        
-        var filePreviewHeight = 220.0f;
-        ImGui.BeginChild("Files", new Vector2(0, Size.Y - (filePreviewHeight - 50) * 2));
-        if (_currentDir != null) {
-            try {
-                _selectedDir = _currentDir;
-                if (!CanAccess(_selectedDir)) {
-                    ImGui.Text($"Access to the path '{_selectedDir.FullName}' is denied.");
-                } else {
-                    var files = GetCachedFiles(_currentDir);
-                    if (files.Length <= 0) ImGui.Text("No Files");
-                    int fileIdx = 0;
-                    foreach (var file in files) {
-                        if (ImGui.Selectable(file.Name, _selectedFileIdx == fileIdx)) {
-                            _selectedFileIdx = fileIdx;
-                            _selectedFile = file;
-                        }
-                        fileIdx++;
-                    }
-                }
-            } catch (UnauthorizedAccessException e) {
-                ImGui.Text($"{e.Message}");
+            // Directories
+            if (ImGui.BeginChild("Directories")) {
+                var root = new DirectoryInfo(ROOT_DIR);
+                RenderDirTree(root);
+                ImGui.EndChild();
             }
+
+            // Files
+            ImGui.TableNextColumn();
+
+            var filePreviewHeight = 280.0f;
+            ImGui.BeginChild("Files", new Vector2(0, Size.Y - (filePreviewHeight - 80) * 2));
+            if (_currentDir != null) {
+                try {
+                    _selectedDir = _currentDir;
+                    if (!CanAccess(_selectedDir)) {
+                        ImGui.Text($"Access to the path '{_selectedDir.FullName}' is denied.");
+                    } else {
+                        var files = GetCachedFiles(_currentDir);
+                        if (files.Length <= 0) ImGui.Text("No Files");
+                        int fileIdx = 0;
+                        foreach (var file in files) {
+                            if (ImGui.Selectable(file.Name, _selectedFileIdx == fileIdx)) {
+                                _selectedFileIdx = fileIdx;
+                                _selectedFile = file;
+                            }
+                            fileIdx++;
+                        }
+                    }
+                } catch (UnauthorizedAccessException e) {
+                    ImGui.Text($"{e.Message}");
+                }
+            }
+            ImGui.EndChild(); // Files
+
+            // Preview
+            ImGuiChildFlags cf = ImGuiChildFlags.AlwaysUseWindowPadding | ImGuiChildFlags.Borders;
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, PreviewBg);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(8));
+            if (ImGui.BeginChild("FilePreview", new Vector2(0, filePreviewHeight), cf)) {
+                ImGui.Text("Preview");
+                if (_selectedFile != null) FileInfoTable(_selectedFile);
+                ImGui.EndChild();
+            }
+            ImGui.PopStyleColor();
+            ImGui.PopStyleVar();
+
+            ImGui.EndTable(); // File Browser Table
         }
-        ImGui.EndChild();
-        //ImGui.SetCursorPosY(ImGui.GetCursorPosY() - filePreviewHeight);
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0, 0, 0, .2f));
-        ImGui.BeginChild("FilePreview", new Vector2(0, filePreviewHeight));
-        ImGui.Text("Preview");
-        if (_selectedFile != null) FileInfoTable(_selectedFile);
-        ImGui.EndChild();
-        ImGui.PopStyleColor();
-
-
-        ImGui.EndTable();
     }
 
     private void RenderDirTree(DirectoryInfo di) {
@@ -183,38 +195,38 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
         ImGui.TableNextColumn();
         ImGui.Text($"{fi.LastAccessTime}");
         bool hasPreview = false;
-        //if (mime.StartsWith("image/")) {
-        //    if (!_images.TryGetValue(fi.Name, out (Vector2, uint) value)) {
-        //        int x, y;
-        //        int channels = 0;
-        //        byte* imgBytes = StbImage.Load(fi.FullName, &x, &y, ref channels, 4);
-        //        var texture = Utils.CreateTexture(imgBytes, x, y);
-        //        value = (new Vector2(x, y), texture);
-        //        _images.Add(fi.Name, value);
-        //    }
-        //    ImGui.TableNextRow(); ImGui.TableNextColumn();
-        //    Text("Dimensions");
-        //    ImGui.TableNextColumn();
-        //    var (size, image) = value;
-        //    ImGui.Text($"{size.X}*{size.Y}");
-        //    ImGui.TableNextRow(); ImGui.TableNextColumn();
-        //    Text("Preview");
-        //    ImGui.TableNextColumn();
-        //    var fixedHeight = 128.0f;
-        //    var aspectRatio = size.X / size.Y;
-        //    var scaledWidth = fixedHeight * aspectRatio;
-        //    ImGui.Image(image, new Vector2(scaledWidth, fixedHeight));
-        //    hasPreview = true;
-        //} else if (mime == "text/plain") {
-        //    //var text = File.ReadAllText(fi.FullName);
-        //    //Text(text);
-        //    //hasPreview = true;
-        //} else {
-        //    ImGui.TableNextRow(); ImGui.TableNextColumn();
-        //    Text("Preview");
-        //    ImGui.TableNextColumn();
-        //    Text("No preview");
-        //}
+        if (mime.StartsWith("image/")) {
+            if (!_images.TryGetValue(fi.Name, out (Vector2, uint) value)) {
+                int x, y;
+                int channels = 0;
+                byte* imgBytes = StbImage.Load(fi.FullName, &x, &y, ref channels, 4);
+                var texture = EasyTextureOpenTK.CreateTexture(imgBytes, x, y);
+                value = (new Vector2(x, y), texture);
+                _images.Add(fi.Name, value);
+            }
+            ImGui.TableNextRow(); ImGui.TableNextColumn();
+            ImGui.Text("Dimensions");
+            ImGui.TableNextColumn();
+            var (size, image) = value;
+            ImGui.Text($"{size.X}*{size.Y}");
+            ImGui.TableNextRow(); ImGui.TableNextColumn();
+            ImGui.Text("Preview");
+            ImGui.TableNextColumn();
+            var fixedHeight = 128.0f;
+            var aspectRatio = size.X / size.Y;
+            var scaledWidth = fixedHeight * aspectRatio;
+            ImGui.Image(image, new Vector2(scaledWidth, fixedHeight));
+            hasPreview = true;
+        } else if (mime == "text/plain") {
+            //var text = File.ReadAllText(fi.FullName);
+            //Text(text);
+            //hasPreview = true;
+        } else {
+            ImGui.TableNextRow(); ImGui.TableNextColumn();
+            ImGui.Text("Preview");
+            ImGui.TableNextColumn();
+            ImGui.Text("No preview");
+        }
         ImGui.TableNextRow(); ImGui.TableNextColumn();
         if (hasPreview) ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 110);
         var btnWidth = ImGui.CalcTextSize("Copy path to clipboard").X + 20;

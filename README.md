@@ -6,6 +6,7 @@ A very wip attempt to make using ImGui as easy as possible.
 ![image](https://github.com/user-attachments/assets/05202aa4-3e59-4816-bd2b-3a83b1145753)
 
 ImageProcessor can be used to process textures. Simply drag and drop a directory of images on the executable.
+Will support [ImageBinner](https://github.com/Jiiks/ImgBinner) soon as well.
 
 Usage is as simple as
 

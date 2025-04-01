@@ -361,14 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/EasyImGui.NET.Window/EasyImGui.NET.Window.csproj
-/Demos/EasyImGui.NET.Demos.csproj
-/EasyImGui.NET.Window/EasyImGui.NET.Window.csproj
-/Demos/EasyImGui.NET.Demos.csproj
-
-/Demos
-/Demos/*
-/EasyImGui.NET.Window
-/EasyImGui.NET.Window/*
-/EasyImGui.NET.Easy
-/EasyImGui.NET.Easy/*
+/EasyImGui.NET.Demos/ExplorerDemo.old.cs
+/EasyImGui.NET.Demos/TextDemo.old.cs

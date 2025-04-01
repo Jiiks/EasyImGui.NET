@@ -21,7 +21,7 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
     public Vector4 PreviewBg;
 
     private readonly Dictionary<string, DirectoryInfo[]> _dirCache = [];
-    private DirectoryInfo? _currentDir, _selectedDir;
+    private DirectoryInfo? _currentDir, _selectedDir, _lastDir;
     private DirectoryInfo[] GetCachedDir(string path) {
         if (_dirCache.TryGetValue(path, out DirectoryInfo[]? value)) return value;
         var di = new DirectoryInfo(path);
@@ -136,7 +136,7 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
             ImGui.EndTable(); // File Browser Table
         }
     }
-
+    private int foo = 0;
     private void RenderDirTree(DirectoryInfo di) {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None;
         if (di.Name == ROOT_DIR) flags |= ImGuiTreeNodeFlags.DefaultOpen;
@@ -150,18 +150,31 @@ public partial class EasyFileExplorerDemo(GameWindowSettings? s = null, NativeWi
             return;
         }
 
+        var subDirectories = GetCachedDir(di.FullName);
+        if (subDirectories.Length <= 0) flags |= ImGuiTreeNodeFlags.Bullet;
         if (ImGui.TreeNodeEx(di.Name, flags)) {
-            _currentDir = di;
-            try {
-                var subDirectories = GetCachedDir(di.FullName);
-                if (subDirectories == null) return;
-                foreach (var subDir in subDirectories) {
-                    RenderDirTree(subDir);
-                }
-            } catch (UnauthorizedAccessException) {
+            
+            if (subDirectories.Length > 0) {
+                
+                try {
+                    if (subDirectories == null) return;
+                    foreach (var subDir in subDirectories) {
+                        RenderDirTree(subDir);
+                    }
+                } catch (UnauthorizedAccessException) { }
             }
+
             ImGui.TreePop();
+            return;
+
         }
+        if (ImGui.IsItemToggledOpen()) {
+            _currentDir = di;
+        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Left)) {
+            _currentDir = di;
+        }
+
     }
 
     protected unsafe void FileInfoTable(FileInfo fi) {

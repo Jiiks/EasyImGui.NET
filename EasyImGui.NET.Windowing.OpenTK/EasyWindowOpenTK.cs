@@ -9,7 +9,7 @@ using System.Reflection;
 using System.ComponentModel;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Resources;
+using EasyImGui.NET.Components;
 
 namespace EasyImGui.NET.Windowing.OpenTK;
 
@@ -38,7 +38,7 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
         ImGuiImplGLFW.InitForOpenGL(GLFWPtr, true);
         ImGuiImplOpenGL3.SetCurrentContext(ImGui.GetCurrentContext());
         ImGuiImplOpenGL3.Init(GlslVersion);
-
+        // TODO Bundle all of this together into a single loop
         var methods = ActionGen.GetMethods(this);
         foreach (var method in methods) {
             _imguiWindows.Add(new() {
@@ -52,6 +52,20 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
         // Process fields
         EasySetters.SetColorsDefs(this, fields);
         EasySetters.SetColorDefs(this, fields);
+
+        foreach(var field in fields) {
+            var attribute = field.GetCustomAttribute<EzButtonAttribute>();
+            if (attribute == null) continue;
+            var btn = new EzButton(attribute.Text);
+            if (attribute.OnClick == null) continue;
+            var method = GetType().GetMethod(attribute.OnClick, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if(method == null) {
+                field.SetValue(this, btn);
+                continue;
+            }
+            btn.OnClick += (Action<EzButton>)method.CreateDelegate(typeof(Action<EzButton>), this);
+            field.SetValue(this, btn);
+        }
 
         // Process instanced res containers
         foreach (var field in fields) {
@@ -100,6 +114,9 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
 
             if (fsAttrIndex >= attribute.Sizes.Length) fsAttrIndex = 0;
         }
+
+
+        ComponentSetup();
     }
 
     /// <inheritdoc/>
@@ -139,6 +156,8 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
         ImGuiImplGLFW.Shutdown();
         ImGui.DestroyContext();
     }
+
+    protected virtual void ComponentSetup() { }
 
 }
 

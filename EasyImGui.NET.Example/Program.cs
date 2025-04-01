@@ -111,9 +111,9 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
 
 internal class Program() {
     public static void Main() {
-       // var tw = TestWindow.Create();
-       // tw.Run();
-       // tw.Dispose();
+        // var tw = TestWindow.Create();
+        // tw.Run();
+        // tw.Dispose();
         EasyFileExplorerDemo.RunDemo();
     }
 }

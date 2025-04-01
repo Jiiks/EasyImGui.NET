@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasyImGui.NET.Common\EasyImGui.NET.Common.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Components\EasyImGui.NET.Components.csproj" />
   </ItemGroup>
 
 </Project>

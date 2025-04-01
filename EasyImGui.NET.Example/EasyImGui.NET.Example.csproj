@@ -25,7 +25,6 @@
     <ProjectReference Include="..\EasyImGui.NET.Common\EasyImGui.NET.Common.csproj" />
     <ProjectReference Include="..\EasyImGui.NET.Easy\EasyImGui.NET.Core.csproj" />
     <ProjectReference Include="..\EasyImGui.NET.Windowing.OpenTK\EasyImGui.NET.Windowing.OpenTK.csproj" />
-    <ProjectReference Include="..\EasyImGui.NET.Window\EasyImGui.NET.Window.csproj" />
   </ItemGroup>
 
   <ItemGroup>

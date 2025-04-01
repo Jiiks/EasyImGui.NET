@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="TextDemo.old.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Hexa.NET.StbImage" Version="1.0.2" />
     <PackageReference Include="MimeTypesMap" Version="1.0.9" />
     <PackageReference Include="TextCopy" Version="6.2.1" />

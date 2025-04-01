@@ -2,6 +2,10 @@
 
 A very wip attempt to make using ImGui as easy as possible.
 
+[File Explorer Demo](https://github.com/Jiiks/EasyImGui.NET/blob/master/EasyImGui.NET.Demos/EasyFileExplorerDemo.cs)
+![image](https://github.com/user-attachments/assets/05202aa4-3e59-4816-bd2b-3a83b1145753)
+
+
 Usage is as simple as
 
 ```cs

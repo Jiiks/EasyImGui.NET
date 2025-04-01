@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EasyImGui.NET.Common\EasyImGui.NET.Common.csproj" />
     <ProjectReference Include="..\EasyImGui.NET.Core\EasyImGui.NET.Core.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Windowing.OpenTK\EasyImGui.NET.Windowing.OpenTK.csproj" />
   </ItemGroup>
   
 </Project>

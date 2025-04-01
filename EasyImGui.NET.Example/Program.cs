@@ -4,6 +4,7 @@ using OpenTK.Windowing.Desktop;
 using EasyImGui.NET.Windowing.OpenTK;
 using EasyImGui.NET.Common;
 using System.Numerics;
+using EasyImGui.NET.Demos;
 
 namespace EasyImGui.NET.Example;
 // Resources can just as easily be defined in a separate class
@@ -109,9 +110,9 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
 
 internal class Program() {
     public static void Main() {
-        var tw = TestWindow.Create();
-        tw.Run();
-        tw.Dispose();
-        
+       // var tw = TestWindow.Create();
+       // tw.Run();
+       // tw.Dispose();
+        EasyFileExplorerDemo.RunDemo();
     }
 }

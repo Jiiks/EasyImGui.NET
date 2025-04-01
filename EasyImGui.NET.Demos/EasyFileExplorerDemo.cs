@@ -221,7 +221,7 @@ public partial class EasyFileExplorerDemo {
         nws.TransparentFramebuffer = true;
         nws.ClientSize = new OpenTK.Mathematics.Vector2i(1280, 720);
         var window = new EasyFileExplorerDemo(gws, nws) {
-            Title = "File Explorer ListBox Demo"
+            Title = "File Explorer Demo"
         };
         window.Run();
         window.Dispose();

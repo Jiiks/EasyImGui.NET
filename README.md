@@ -9,6 +9,7 @@ ImageProcessor can be used to process textures. Simply drag and drop a directory
 Will support [ImageBinner](https://github.com/Jiiks/ImgBinner) soon as well.
 
 Usage is as simple as
+Latest version of this example can be found in [EasyImGui.NET.Example/Program.cs](https://github.com/Jiiks/EasyImGui.NET/blob/master/EasyImGui.NET.Example/Program.cs)
 
 ```cs
 using Hexa.NET.ImGui;
@@ -70,10 +71,11 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
     // Define a texture that's in resx
     // Processed means the texture has already been processed and doesn't require any processing.
     // Eg it's already been ran through StbImage and saved as a raw binary.
+    // Use the included ImageProcessor to process any images if you'd like.
     [TextureDef(ResourceName = "testimg", Width = 123, Height = 128, Processed = true)]
     public uint TestTexture;
 
-    // Each ImGuiWindow definition is called every frame after settingup ImGui frame.
+    // Each ImGuiWindow definition is called every frame after setting up ImGui frame.
     // Setting title will AutoBegin unless AutoBegin is set to false.
     // AutoBegin calls ImGui.Begin() before and AutoEnd calls ImGui.End() after
     [ImGuiWindow(AutoBegin = true, AutoEnd = true, Id = "ColorDemoWindow", Title = "Color Demo")]

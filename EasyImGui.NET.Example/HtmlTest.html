@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Window Title</title>
+    </head>
+    <body>
+        <div title="Window Title" id="WindowMain">
+            <span id="Some_Text">Some Text</span>
+            <button id="Test_Button" OnClick="OnTestBtnClick">Test Button</button>
+            <div title="Child Div" id="WindowMain_Child">
+                <span id="WindowMain_Child_Span">This is a child div</span>
+                <div title="Another child" id="Another_Child">
+                    <span>Second child</span>
+                    <div title="Deep Child" id="DeepChild">
+                        <table datasource="DeepChildTableData" id="DeepChildTable"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="Table Test" id="TestTableDiv">
+            <table id="TestTable" datasource="TestTableData"/>
+        </div>
+    </body>
+</html>

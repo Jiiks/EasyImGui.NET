@@ -24,6 +24,7 @@
     <ProjectReference Include="..\EasyImGui.NET.Common\EasyImGui.NET.Common.csproj" />
     <ProjectReference Include="..\EasyImGui.NET.Core\EasyImGui.NET.Core.csproj" />
     <ProjectReference Include="..\EasyImGui.NET.Demos\EasyImGui.NET.Demos.csproj" />
+    <ProjectReference Include="..\EasyImGui.NET.Windowing.HTML\EasyImGui.NET.Windowing.HTML.csproj" />
     <ProjectReference Include="..\EasyImGui.NET.Windowing.OpenTK\EasyImGui.NET.Windowing.OpenTK.csproj" />
   </ItemGroup>
 
@@ -40,6 +41,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="HtmlTest.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

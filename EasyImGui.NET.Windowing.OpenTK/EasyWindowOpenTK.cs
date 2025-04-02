@@ -34,6 +34,7 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
 
     protected override void OnLoad() {
         ImGui.SetCurrentContext(ImGui.CreateContext());
+        ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         ImGuiImplGLFW.SetCurrentContext(ImGui.GetCurrentContext());
         ImGuiImplGLFW.InitForOpenGL(GLFWPtr, true);
         ImGuiImplOpenGL3.SetCurrentContext(ImGui.GetCurrentContext());
@@ -121,6 +122,7 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
 
     /// <inheritdoc/>
     protected override void OnRenderFrame(FrameEventArgs args) {
+
         if (IsExiting) return;
         GL.ClearColor(ClearColor);
         GL.Clear(ClearBufferMask);
@@ -130,6 +132,7 @@ public unsafe class EasyWindowOpenTK(GameWindowSettings? gameWindowSettings = nu
         ImGuiImplGLFW.NewFrame();
         ImGui.NewFrame();
 
+        base.OnRenderFrame(args);
         foreach (var imguiWin in _imguiWindows) {
             var action = imguiWin.Action;
             var attr = imguiWin.ImGuiWindowAttribute;

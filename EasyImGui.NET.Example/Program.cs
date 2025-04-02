@@ -5,6 +5,8 @@ using EasyImGui.NET.Windowing.OpenTK;
 using EasyImGui.NET.Common;
 using System.Numerics;
 using EasyImGui.NET.Demos;
+using EasyImGui.NET.Windowing.HTML;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EasyImGui.NET.Example;
 // Resources can just as easily be defined in a separate class
@@ -109,11 +111,42 @@ internal class TestWindow(GameWindowSettings? s = null, NativeWindowSettings? n 
     }
 }
 
+public class TestVm : EasyViewModel {
+    
+    private int Foo = 0;
+    public void OnTestBtnClick(Button b) {
+        var dct = Window.GetNodeById("DeepChildTable");
+        dct.Visible = !dct.Visible;
+        Foo++;
+    }
+
+    public EasyTableDataSource TestTableData() {
+        return new EasyTableDataSource() {
+            Columns = 3,
+            Headers = { $"Header {Foo+1}", $"Header {Foo+2}", $"Header {Foo+3}" },
+            Cells = {
+                $"Cell {Foo+1}", $"Cell {Foo+2}", $"Cell {Foo+3}",
+                $"Cell {Foo+4}", $"Cell {Foo+5}", $"Cell {Foo+6}" ,
+                $"Cell {Foo+7}", $"Cell {Foo+8}", $"Cell {Foo+9}"
+            }
+        };
+    }
+
+    public EasyTableDataSource DeepChildTableData() {
+        return new EasyTableDataSource() {
+            Columns = 3,
+            Headers = { $"DS {Foo + 1}", $"DS {Foo + 2}", $"DS {Foo + 3}" },
+            Cells = {
+                $"DS {Foo+1}", $"DS {Foo+2}", $"DS {Foo+3}",
+                $"DS {Foo+4}", $"DS {Foo+5}", $"DS {Foo+6}" ,
+                $"DS {Foo+7}", $"DS {Foo+8}", $"DS {Foo+9}"
+            }
+        };
+    }
+}
+
 internal class Program() {
     public static void Main() {
-        // var tw = TestWindow.Create();
-        // tw.Run();
-        // tw.Dispose();
-        EasyFileExplorerDemo.RunDemo();
+        var hw = new EasyWindowHTML(new FileInfo("HtmlTest.html"), new TestVm());
     }
 }
